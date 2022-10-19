@@ -2,6 +2,16 @@ import mongoose from "mongoose";
 
 const {Schema, model}= mongoose
 
+const commentsSchema = new Schema(
+    {
+        commentHeader: {type: String, required: true},
+        commentText : {type: String, required: true}
+    },
+    {
+        timestamps : true
+    }
+)
+
 const blogschema = new Schema(
     {
         category: {type: String, required: true},
@@ -15,7 +25,10 @@ const blogschema = new Schema(
             name: {type: String, required: true},
             avatar: {type: String, required: true}
         },
-        content: {type: String, required: true}
+        content: {type: String, required: true},
+        comments:[
+            commentsSchema
+        ]
     },
     {
         timestamps: true,
