@@ -1,32 +1,26 @@
-import  Express  from "express";
+import Express from "express";
 import cors from "cors";
-import Endpoint  from "express-list-endpoints";
+import Endpoint from "express-list-endpoints";
 import blogRouter from "./blog/index.js";
 import mongoose from "mongoose";
 
 // import dotenv from 'dotenv'
 // dotenv.config()
 
+const server = Express();
+const port = process.env.PORT || 3001;
 
+server.use(cors());
+server.use(Express.json());
 
-const server = Express()
-const port = process.env.PORT || 3001
+server.use("/blog", blogRouter);
 
-server.use(cors())
-server.use(Express.json())
+mongoose.connect(process.env.MONGO_CONNECTION_URL);
 
-server.use("/blog",blogRouter)
-
-
-
-mongoose.connect(process.env.MONGO_CONNECTION_URL)
-
-
-mongoose.connection.on("connected",()=>{
-    console.log("succesfully connected to mongoDB")
-    server.listen(port, ()=>{
-        console.table(Endpoint(server))
-        console.log(`server is running in ${port}`)
-    })
-})
-
+mongoose.connection.on("connected", () => {
+  console.log("successfully connected to mongoDB");
+  server.listen(port, () => {
+    console.table(Endpoint(server));
+    console.log(`server is running in ${port}`);
+  });
+});
