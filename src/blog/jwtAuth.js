@@ -13,12 +13,14 @@ export const JWTAuthMiddleware = async (req, res, next) => {
     try {
       const accessToken = req.headers.authorization.replace("Bearer ", "");
 
+      console.log(accessToken);
+
       const payload = await verifyAccessToken(accessToken);
 
       req.user = {
         _id: payload._id,
-        role: payload.role,
       };
+      next();
     } catch (error) {
       next(createHttpError(401, "Token not Valid"));
     }
@@ -26,7 +28,7 @@ export const JWTAuthMiddleware = async (req, res, next) => {
 };
 
 export const createAccessToken = (payload) => {
-  new Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -39,11 +41,11 @@ export const createAccessToken = (payload) => {
   });
 };
 
-export const verifyAccessToken = (accessToken) => {
-  new Promise((res, rej) => {
+export const verifyAccessToken = (accessToken) =>
+  new Promise((res, rej) =>
     jwt.verify(accessToken, process.env.JWT_SECRET, (err, originalPayload) => {
-      if (err) rej(err);
-      else res(originalPayload);
-    });
-  });
-};
+      if (err) {
+        rej(err);
+      } else res(originalPayload);
+    })
+  );

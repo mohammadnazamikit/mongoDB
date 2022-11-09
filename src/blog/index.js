@@ -3,11 +3,11 @@ import BlogsModel from "./model.js";
 import createHttpError from "http-errors";
 import commentsModel from "../comments/model.js";
 import userModel from "../user/model.js";
-import { createAccessToken } from "./jwtAuth.js";
+import { createAccessToken, JWTAuthMiddleware } from "./jwtAuth.js";
 
 const blogRouter = Express.Router();
 
-blogRouter.post("/", async (req, res, next) => {
+blogRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const newUser = new BlogsModel(req.body);
     const { _id } = await newUser.save();
@@ -18,7 +18,7 @@ blogRouter.post("/", async (req, res, next) => {
   }
 });
 
-blogRouter.get("/", async (req, res, next) => {
+blogRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const users = await BlogsModel.find();
     res.send(users);
@@ -26,9 +26,9 @@ blogRouter.get("/", async (req, res, next) => {
     next(error);
   }
 });
-blogRouter.get("/:userId", async (req, res, next) => {
+blogRouter.get("/:userId", JWTAuthMiddleware, async (req, res, next) => {
   try {
-    const user = await comm.findById(req.params.userId);
+    const user = await BlogsModel.findById(req.params.userId);
     if (user) {
       res.send(user);
     } else {
@@ -38,7 +38,7 @@ blogRouter.get("/:userId", async (req, res, next) => {
     next(error);
   }
 });
-blogRouter.put("/:userId", async (req, res, next) => {
+blogRouter.put("/:userId", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const updateUser = await BlogsModel.findByIdAndUpdate(
       req.params.userId,
@@ -56,7 +56,7 @@ blogRouter.put("/:userId", async (req, res, next) => {
     next(error);
   }
 });
-blogRouter.delete("/:userId", async (req, res, next) => {
+blogRouter.delete("/:userId", JWTAuthMiddleware, async (req, res, next) => {
   try {
     const deleteuser = await BlogsModel.findByIdAndDelete(req.params.userId);
     if (deleteuser) {
@@ -214,13 +214,12 @@ blogRouter.post("/login", async (req, res, next) => {
     const { email, password } = req.body;
 
     const user = await userModel.checkCredentials(email, password);
-    
+
     if (user) {
       const accessToken = await createAccessToken({
         _id: user._id,
-        role: user.role,
       });
-
+      console.log("accessToken", accessToken);
       res.send({ accessToken });
     } else {
       next(createHttpError(401, `Credentials are not ok`));
