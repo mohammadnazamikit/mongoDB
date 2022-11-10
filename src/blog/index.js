@@ -4,8 +4,27 @@ import createHttpError from "http-errors";
 import commentsModel from "../comments/model.js";
 import userModel from "../user/model.js";
 import { createAccessToken, JWTAuthMiddleware } from "./jwtAuth.js";
+import passport from "passport";
 
 const blogRouter = Express.Router();
+
+blogRouter.get(
+  "/googleLogin",
+  passport.authenticate("google", { scope: ["profile", "email"] })
+);
+
+blogRouter.get(
+  "/googleRedirect",
+  passport.authenticate("google", { session: false }),
+  async (req, res, next) => {
+    try {
+      const { accessToken } = req.user;
+      res.redirect(`${process.env.BE_URL}/blog?accessToken=${accessToken}`);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 blogRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   try {
