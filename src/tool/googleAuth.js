@@ -11,11 +11,13 @@ const googleStrategy = new GoogleStrategy(
   async (_, __, profile, passportNext) => {
     console.log("Profile: ", profile);
     const { email } = profile._json;
-    console.log("this is email we want", email);
+
     try {
       const user = await userModel.findOne({ email });
       if (user) {
-        const { accessToken } = await createAccessToken(user);
+        const accessToken = await createAccessToken({
+          email: profile._json.email,
+        });
 
         passportNext(null, { accessToken });
       } else {
@@ -29,7 +31,7 @@ const googleStrategy = new GoogleStrategy(
 
         console.log(createdUser);
 
-        const { accessToken } = await createAccessToken({
+        const accessToken = await createAccessToken({
           email: profile._json.email,
         });
         passportNext(null, { accessToken });

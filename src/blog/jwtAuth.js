@@ -27,8 +27,8 @@ export const JWTAuthMiddleware = async (req, res, next) => {
   }
 };
 
-export const createAccessToken = (payload) => {
-  return new Promise((resolve, reject) => {
+export const createAccessToken = (payload) =>
+  new Promise(function (resolve, reject) {
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
@@ -39,7 +39,6 @@ export const createAccessToken = (payload) => {
       }
     );
   });
-};
 
 export const verifyAccessToken = (accessToken) =>
   new Promise((res, rej) =>

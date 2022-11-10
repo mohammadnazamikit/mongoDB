@@ -19,7 +19,7 @@ blogRouter.get(
   async (req, res, next) => {
     try {
       const { accessToken } = req.user;
-      res.redirect(`${process.env.BE_URL}/blog?accessToken=${accessToken}`);
+      res.redirect(`https://www.google.com/?token=${accessToken}`);
     } catch (error) {
       next(error);
     }
