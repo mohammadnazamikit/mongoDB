@@ -37,7 +37,7 @@ blogRouter.post("/", JWTAuthMiddleware, async (req, res, next) => {
   }
 });
 
-blogRouter.get("/", JWTAuthMiddleware, async (req, res, next) => {
+blogRouter.get("/", async (req, res, next) => {
   try {
     const users = await BlogsModel.find();
     res.send(users);
